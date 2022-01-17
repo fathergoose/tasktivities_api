@@ -4,12 +4,12 @@ import { Item } from '../../pages/Workspace';
 
 const ColumnWrapper = styled.div`
   height: 100%;
-  width: 50%;
+  width: 35%;
   background-color: #eee;
 `;
 
 const ItemWrapper = styled.button<{ focusedIndex: number; customKey: number }>`
-width: 100%;
+  width: 100%;
   padding .5em;
   border: none;
   background-color: ${({ focusedIndex, customKey }) =>
@@ -18,7 +18,6 @@ width: 100%;
     color: #0645AD
   }
 `;
-
 type ItemListProps = {
   items: Item[];
   focusedIndex: number;
