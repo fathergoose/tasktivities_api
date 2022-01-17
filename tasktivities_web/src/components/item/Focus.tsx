@@ -1,29 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Item } from '../../pages/Workspace';
 
 const ColumnWrapper = styled.div`
   height: 100%;
   width: 25%;
   background-color: #888;
 `;
+const Label = styled.label``;
+const Value = styled.span``;
 
-type Tag = {
-  id: string;
-  name: string;
-};
-export type Item = {
-  id: string;
-  name: string;
-  description?: string;
-  tags: Tag[];
-};
 type ItemFocusProps = {
   item: Item;
 };
 export default function Focus({ item }: ItemFocusProps) {
   return (
     <ColumnWrapper>
-      <span>Hi al</span>
+      <Label title='Item Name'>Name: </Label>
+      <Value>{item.name}</Value>
     </ColumnWrapper>
   );
 }

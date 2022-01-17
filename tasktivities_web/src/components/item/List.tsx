@@ -1,38 +1,48 @@
-import { gql, useQuery } from '@apollo/client';
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
-import { isTemplateTail } from 'typescript';
-import { Item } from './Focus';
+import { Item } from '../../pages/Workspace';
 
-const EXCHANGE_RATES = gql`
-  query GetAllItems {
-    getAllItems {
-      id
-      createdAt
-      name
-    }
-  }
-`;
 const ColumnWrapper = styled.div`
   height: 100%;
   width: 50%;
   background-color: #eee;
 `;
 
-/**
- * Eventually, this will take the list it's going to
- * display as a prop
- */
-export default function List() {
-  const { loading, error, data } = useQuery(EXCHANGE_RATES);
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-  console.log(JSON.stringify(data));
+const ItemWrapper = styled.button<{ focusedIndex: number; customKey: number }>`
+width: 100%;
+  padding .5em;
+  border: none;
+  background-color: ${({ focusedIndex, customKey }) =>
+    focusedIndex === customKey ? '#ddd' : '#eee'};
+  &:hover {
+    color: #0645AD
+  }
+`;
+
+type ItemListProps = {
+  items: Item[];
+  focusedIndex: number;
+  setFocusedIndex: Dispatch<SetStateAction<number>>;
+};
+export default function List({
+  items,
+  focusedIndex,
+  setFocusedIndex,
+}: ItemListProps) {
   return (
     <ColumnWrapper>
-      <span>List of items:</span>
-      {data.getAllItems.map((item: Item) => (
-        <div>Item: {item.name}</div>
+      <div>List of items:</div>
+      {items.map((item: Item, index: number) => (
+        <ItemWrapper
+          focusedIndex={focusedIndex}
+          onClick={() => setFocusedIndex(index)}
+          key={index}
+          customKey={index}
+        >
+          Item: {item.name}
+          Key: {index}
+          FocusedIndex: {focusedIndex}
+        </ItemWrapper>
       ))}
     </ColumnWrapper>
   );
