@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
+import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
 
 const ColumnWrapper = styled.div`
   height: 100%;
@@ -10,7 +12,8 @@ const ColumnWrapper = styled.div`
 export default function Browser() {
   return (
     <ColumnWrapper>
-      <span>Hi al</span>
+      <AccessAlarmIcon />
+      <ThreeDRotation />
     </ColumnWrapper>
   );
 }
