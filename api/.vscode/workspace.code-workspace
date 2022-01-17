@@ -4,7 +4,7 @@
 			"path": ".."
 		}
 	],
-	"settings": {  
+	"settings": {
 		"files.exclude": {
 			"**/.git": true,
 			"**/.svn": true,
@@ -16,9 +16,15 @@
 			"**/dist": true,
 			"**/.vscode": true
 		},
+		"normanstypczynski.gqlformatter.enable.graphql": true,
+		"normanstypczynski.gqlformatter.formatGqlString.tabSize": 2,
 		"cSpell.words": [
+			"asynciterable",
+			"codepaths",
+			"graphiql",
 			"tasktivities",
 			"tasktivities_api",
+			"tsbuildinfo",
 			"typegoose"
 		]
 	},
@@ -30,7 +36,7 @@
 				"type": "node",
 				"request": "launch",
 				"args": [
-					"${relativeFile}"
+					"${workspaceRoot}"
 				],
 				"runtimeArgs": [
 					"-r",

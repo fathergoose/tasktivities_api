@@ -2,7 +2,7 @@
   "name": "tasktivities_api",
   "version": "0.0.1",
   "description": "A generalized task manager / planner",
-  "main": "index.js",
+  "main": "src/app.ts",
   "author": "Al Ilseman",
   "license": "MIT",
   "private": false,
@@ -12,19 +12,23 @@
   },
   "dependencies": {
     "@typegoose/typegoose": "^9.5.0",
+    "apollo-server": "^3.6.1",
     "apollo-server-core": "^3.6.1",
     "apollo-server-express": "^3.6.1",
     "class-validator": "^0.13.2",
     "express": "^4.17.2",
     "express-graphql": "^0.12.0",
     "graphql": "^16.2.0",
+    "mongodb": "^4.3.0",
     "mongoose": "^6.1.6",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1"
   },
   "devDependencies": {
-    "@types/express": "types/express",
     "@types/node": "^17.0.8",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
     "nodemon": "^2.0.15",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"

@@ -1,12 +1,28 @@
-import Express from 'express';
-import ExpressGraphQL from 'express-graphql';
+import { ApolloServer } from 'apollo-server';
+import express, { Response, Request } from 'express';
+import { environment } from './config/config';
+import typeDefs from './graphql/schema';
+import resolvers from './graphql/resolvers';
 import mongoose from 'mongoose';
 
-const app = Express();
-const MONGO_CONNECTION = 'mongodb://localhost:27017/tasktivities';
-mongoose
-  .connect(MONGO_CONNECTION)
-  .then(() => console.log(`Connected to ${MONGO_CONNECTION}`))
-  .catch(e =>
-    console.error(`There was a problem connecting to mongodb - ${e.message}`),
-  );
+const server = new ApolloServer({ typeDefs, resolvers });
+server
+  .listen()
+  .then(({ url }) => {
+    const env = process.env.NODE_ENV || 'development';
+
+    mongoose.connect(environment[env].dbString);
+
+    let db = mongoose.connection;
+    db.on('error', e => {
+      console.error('Error while connecting to DB');
+      console.error(e);
+    });
+
+    db.on('connected', conn => {
+      console.log('Connected to MongoDB');
+    });
+
+    console.log(`#=> Server ready at ${url}`);
+  })
+  .catch(e => console.error(e));
