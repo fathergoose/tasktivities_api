@@ -5,7 +5,6 @@ import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
 
 const ColumnWrapper = styled.div`
   height: 100%;
-  width: 20%;
   background-color: #888;
 `;
 

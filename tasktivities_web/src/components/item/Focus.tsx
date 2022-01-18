@@ -4,7 +4,6 @@ import { Item } from '../../pages/Workspace';
 
 const ColumnWrapper = styled.div`
   height: 100%;
-  width: 45%;
   background-color: #f7f7f7;
 `;
 const Label = styled.label``;
