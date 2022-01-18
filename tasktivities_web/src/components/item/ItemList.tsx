@@ -52,7 +52,7 @@ export default function ItemList({
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+    <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
       <List component='nav' aria-label='main mailbox folders'>
         {items.map((item: Item, index: number) => (
           <>

@@ -2,7 +2,7 @@ import { gql, useQuery } from '@apollo/client';
 import { Container, Grid } from '@mui/material';
 import React, { useState } from 'react';
 import Browser from '../components/item/Browser';
-import Focus from '../components/item/Focus';
+import Focus from '../components/item/FocusedItem';
 import ItemList from '../components/item/ItemList';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -121,7 +121,7 @@ export default function Workspace(props: WorkspaceProps) {
       </AppBar>
       <Box
         component='nav'
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
         aria-label='mailbox folders'
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -134,7 +134,7 @@ export default function Workspace(props: WorkspaceProps) {
             keepMounted: true, // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
+            display: { xs: 'block', sm: 'block', md: 'none' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
@@ -146,7 +146,7 @@ export default function Workspace(props: WorkspaceProps) {
         <Drawer
           variant='permanent'
           sx={{
-            display: { xs: 'none', sm: 'block' },
+            display: { xs: 'none', sm: 'none', md: 'block' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
@@ -162,21 +162,27 @@ export default function Workspace(props: WorkspaceProps) {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
         <Toolbar />
-        <Grid item xs={3} sm={4} md={4}>
-          {data && (
-            <ItemList
-              items={data.getAllItems}
-              focusedIndex={focusedIndex}
-              setFocusedIndex={setFocusedIndex}
-            />
-          )}
-        </Grid>
-        <Grid item xs={3} sm={4} md={4}>
-          {data && <Focus item={data?.getAllItems[focusedIndex]} />}
+        <Grid
+          container
+          spacing={{ xs: 2, md: 4, lg: 8 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          <Grid item xs={4} sm={4} md={6}>
+            {data && (
+              <ItemList
+                items={data.getAllItems}
+                focusedIndex={focusedIndex}
+                setFocusedIndex={setFocusedIndex}
+              />
+            )}
+          </Grid>
+          <Grid item xs={4} sm={4} md={6}>
+            {data && <Focus item={data?.getAllItems[focusedIndex]} />}
+          </Grid>
         </Grid>
       </Box>
     </Box>
