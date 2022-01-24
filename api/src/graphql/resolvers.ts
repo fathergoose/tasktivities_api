@@ -1,6 +1,43 @@
-import { CallbackError } from 'mongoose';
-import Items, { CreateItemInput, Item } from '../db/models/Item';
-import Tags from '../db/models/Tag';
+import { ObjectId } from 'mongodb';
+import { Callback, CallbackError } from 'mongoose';
+import AppUsers from '../db/models/Users';
+import Items from '../db/models/Item';
+import ItemLists from '../db/models/ItemList';
+import UserCollections from '../db/models/UserCollection';
+
+export type Item = {
+  id: string;
+  name: string;
+  itemType?: string;
+  tags: string[];
+  description?: string;
+  itemDate?: Date;
+  duration?: number;
+  createdAt: Date;
+};
+
+export type CreateItemInput = {
+  itemListId: string;
+  userId: string;
+  name: string;
+  itemType: string;
+  pending?: boolean;
+  tags?: string[];
+  description?: string;
+  itemDate?: Date;
+  duration?: number;
+};
+
+export type UserCollection = {
+  name: string;
+  userId: AppUser;
+};
+
+type AppUser = {
+  username: string;
+  password: string;
+  email: string;
+};
 
 export default {
   Query: {
@@ -12,6 +49,7 @@ export default {
         });
       });
     },
+
     findItem: (_: unknown, { id }: { id: string }) => {
       return new Promise((resolve, reject) => {
         Items.findOne({ _id: id }, (err: CallbackError, items: Item[]) => {
@@ -20,14 +58,26 @@ export default {
         });
       });
     },
+
+    getAppData: (_: unknown, { userId }: { userId: string }) => {
+      console.log(userId);
+      return new Promise((resolve, reject) => {
+        UserCollections.findOne({ userId: new ObjectId(userId), name: 'root' })
+          .populate({ path: 'itemLists', model: ItemLists })
+          .exec(function (error: CallbackError, data: UserCollection) {
+            if (error) reject(error);
+            console.log(data);
+            resolve({
+              root: { name: data.name, username: data.userId.username },
+            });
+          });
+      });
+    },
   },
+
   Mutation: {
     createItem: (_: unknown, { input }: { input: CreateItemInput }) => {
-      const item = new Items({
-        name: input.name,
-        description: input.description,
-        createdAt: Math.round(Date.now() / 1000),
-      });
+      const item = new Items(input);
 
       item.id = item._id;
 

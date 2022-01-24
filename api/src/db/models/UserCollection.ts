@@ -1,0 +1,15 @@
+import { mongoose } from '@typegoose/typegoose';
+import { Schema } from 'mongoose';
+import AppUser from './Users';
+
+const UserCollectionSchema = new Schema({
+  name: { type: String, required: true },
+  userCollection: { type: this },
+  userId: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
+}).index({ userId: 1, userCollection: 1 });
+
+export default mongoose.model(
+  'UserCollections',
+  UserCollectionSchema,
+  'userCollections',
+);

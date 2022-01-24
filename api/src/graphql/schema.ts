@@ -1,20 +1,41 @@
 import { gql } from 'apollo-server-express';
 
 export default gql`
-  type Item {
-    id: ID!
-    createdAt: Int!
-    name: String!
-    description: String
-    tags: [Tag]
-    itemType: ItemType
-    itemDate: Int
-    duration: Int
+  type UserCollection {
+    name: String
+    childCollections: [UserCollection]
+    itemLists: [ItemList]
   }
 
-  type Tag {
+  type AppData {
+    root: UserCollection
+  }
+
+  type TempCollection {
+    name: String
+    username: String
+  }
+
+  type TempAppData {
+    root: TempCollection
+  }
+
+  type ItemList {
     id: ID!
     name: String!
+    items: [Item]!
+  }
+
+  type Item {
+    id: ID!
+    createdAt: String
+    updatedAt: String
+    name: String!
+    description: String
+    tags: [String]
+    itemType: ItemType!
+    itemDate: String
+    duration: Int
   }
 
   enum ItemType {
@@ -22,28 +43,25 @@ export default gql`
     ACTIVITY
   }
 
-  input ItemInput {
-    id: ID
+  input CreateItemInput {
+    itemListId: String!
+    userId: String!
     name: String!
+    itemType: ItemType!
+    pending: Boolean
     description: String
-    tags: [TagInput]
-    itemType: ItemType
+    tags: [String]
     itemDate: Int
     duration: Int
   }
 
-  input TagInput {
-    id: ID
-    name: String
-  }
-
   type Query {
     getAllItems: [Item]
-    findItem(id: ID): Item
-    getAllTags: [Tag]
+    findItem(id: ID!): Item
+    getAppData(userId: ID!): TempAppData
   }
 
   type Mutation {
-    createItem(input: ItemInput): Item
+    createItem(input: CreateItemInput): Item
   }
 `;

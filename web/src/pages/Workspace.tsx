@@ -1,7 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
-import { Container, Grid } from '@mui/material';
-import React, { useState } from 'react';
-import Browser from '../components/item/Browser';
+import { Grid } from '@mui/material';
+import { useState } from 'react';
 import Focus from '../components/item/FocusedItem';
 import ItemList from '../components/item/ItemList';
 import AppBar from '@mui/material/AppBar';

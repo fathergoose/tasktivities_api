@@ -1,0 +1,72 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"**/node_modules": true,
+			"**/dist": true
+		},
+		"normanstypczynski.gqlformatter.enable.graphql": true,
+		"normanstypczynski.gqlformatter.formatGqlString.tabSize": 2,
+		"cSpell.words": [
+			"asynciterable",
+			"codepaths",
+			"datasource",
+			"gqlformatter",
+			"graphiql",
+			"normanstypczynski",
+			"tasktivities",
+			"tasktivities_api",
+			"tsbuildinfo",
+			"typegoose"
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"compounds": [
+			{
+				"name": "App Debug",
+				"configurations": ["API Debug", "Web UI Debug"]
+			}
+		],
+		"configurations": [
+			{
+				"name": "API Debug",
+				"request": "launch",
+				"runtimeArgs": [
+					"debug"
+				],
+				"runtimeExecutable": "yarn",
+				"skipFiles": [
+					"<node_internals>/**"
+				],
+				"cwd": "${workspaceRoot}/api",
+				"type": "pwa-node",
+				"restart": true
+			},
+			{
+				"name": "Web UI Debug",
+				"request": "launch",
+				"runtimeArgs": [
+					"start"
+				],
+				"runtimeExecutable": "yarn",
+				"skipFiles": [
+					"<node_internals>/**"
+				],
+				"cwd": "${workspaceRoot}/web",
+				"type": "pwa-node",
+				"restart": true
+			},
+		]
+	}
+}
