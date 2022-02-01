@@ -48,6 +48,7 @@ export const ROOT_USER_COLLECTION_QUERY = gql`
     }
     childCollections {
       name
+      id
       childItemLists {
         name
         id
@@ -65,6 +66,22 @@ export const ROOT_USER_COLLECTION_QUERY = gql`
       }
       childCollections {
         name
+        id
+        childItemLists {
+        name
+        id
+        items {
+          id
+          name
+          description
+          type
+          tags
+          createdAt
+          updatedAt
+          itemDate
+          duration
+        }
+        }
       }
     }
   }

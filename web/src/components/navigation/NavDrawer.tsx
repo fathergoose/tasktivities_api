@@ -10,8 +10,19 @@ import StarIcon from '@mui/icons-material/Star';
 import FolderIcon from '@mui/icons-material/Folder';
 import ListIcon from '@mui/icons-material/ListAlt';
 import { RootUserCollection } from '../../pages/Workspace';
+import React, { Dispatch, SetStateAction } from 'react';
+import { isConstructorDeclaration } from 'typescript';
 
-export default function NavDrawer({ root }: { root?: RootUserCollection }) {
+type NavDrawerProps = {
+  root?: RootUserCollection;
+  activeList: string;
+  setActiveList: Dispatch<SetStateAction<string>>;
+};
+export default function NavDrawer({
+  root,
+  activeList,
+  setActiveList,
+}: NavDrawerProps) {
   return (
     <div>
       <Toolbar />
@@ -46,40 +57,47 @@ export default function NavDrawer({ root }: { root?: RootUserCollection }) {
         </ListItem>
         {root && (
           <>
-            {root.childItemLists.map(child => {
+            {root.childItemLists.map(childItemList => {
               return (
-                <ListItem button key={child.id}>
+                <ListItem
+                  button
+                  key={childItemList.id}
+                  onClick={() => setActiveList(childItemList.id)}
+                >
                   <ListItemIcon>
                     <ListIcon />
                   </ListItemIcon>
-                  <ListItemText primary={child.name} />
+                  <ListItemText primary={childItemList.name} />
                 </ListItem>
               );
             })}
-            {root.childCollections.map(child => {
+            {root.childCollections.map(childCollection => {
               return (
-                <>
-                  <ListItem button key={child.id}>
+                <React.Fragment key={childCollection.id}>
+                  <ListItem button>
                     <ListItemIcon>
                       <FolderIcon />
                     </ListItemIcon>
-                    <ListItemText primary={child.name} />
+                    <ListItemText primary={childCollection.name} />
                   </ListItem>
                   <>
-                    {child.childItemLists.map(list => {
+                    {childCollection.childItemLists.map(list => {
                       return (
-                        <>
-                          <ListItem button key={list.id}>
+                        <React.Fragment key={list.id}>
+                          <ListItem
+                            button
+                            onClick={() => setActiveList(list.id)}
+                          >
                             <ListItemIcon>
                               <ListIcon />
                             </ListItemIcon>
                             <ListItemText primary={list.name} />
                           </ListItem>
-                        </>
+                        </React.Fragment>
                       );
                     })}
                   </>
-                </>
+                </React.Fragment>
               );
             })}
           </>

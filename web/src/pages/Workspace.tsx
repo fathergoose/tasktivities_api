@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import { Grid } from '@mui/material';
 import { useState } from 'react';
 import Focus from '../components/item/FocusedItem';
-import ItemList from '../components/item/ItemList';
+import ItemList, { ItemListProps } from '../components/item/ItemList';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -26,6 +26,14 @@ export type Item = {
 };
 
 export type RootUserCollection = {
+  childItemLists: {
+    name: string;
+    id: string;
+    items: Item[];
+  }[];
+  childCollections: {
+    name: string;
+    id: string;
     childItemLists: {
       name: string;
       id: string;
@@ -34,17 +42,9 @@ export type RootUserCollection = {
     childCollections: {
       name: string;
       id: string;
-      childItemLists: {
-        name: string;
-        id: string;
-        items: Item[];
-      }[];
-      childCollections: {
-        name: string;
-        id: string;
-      }[];
     }[];
-}
+  }[];
+};
 export type RootUserCollectionResponse = {
   rootUserCollection: RootUserCollection;
 };
@@ -58,6 +58,7 @@ interface WorkspaceProps {
 
 export default function Workspace({ window, userId }: WorkspaceProps) {
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
+  const [activeList, setActiveList] = useState<string>('_inbox');
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const { loading, error, data } = useQuery<RootUserCollectionResponse>(
     ROOT_USER_COLLECTION_QUERY,
@@ -70,10 +71,30 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
     setMobileOpen(!mobileOpen);
   };
 
-  const drawer = <NavDrawer root={data?.rootUserCollection} />;
+  const drawer = (
+    <NavDrawer
+      activeList={activeList}
+      setActiveList={setActiveList}
+      root={data?.rootUserCollection}
+    />
+  );
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
+  
+    // FIXME: This should be a recursive function no progressively deeper search
+    // LOL: I can't believe it works
+  const activeListObject =
+    data?.rootUserCollection.childItemLists.find(
+      list => list.id === activeList,
+    ) ||
+    data?.rootUserCollection.childCollections
+      .find(collection =>
+        collection.childItemLists.find(list => list.id === activeList),
+      )
+      ?.childItemLists.find(list => list.id === activeList);
+      
+  const activeItemObject = activeListObject?.items[focusedIndex];
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -100,7 +121,7 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
       <Box
         component='nav'
         sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-        aria-label='mailbox folders'
+        aria-label='item collection folders and item lists'
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
@@ -150,18 +171,18 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
           columns={{ xs: 4, sm: 8, md: 12 }}
         >
           <Grid item xs={4} sm={4} md={6}>
-            {data && (
+            {data && activeListObject && (
               <ItemList
-                itemList={data.rootUserCollection.childItemLists[0]}
+                itemList={activeListObject}
                 focusedIndex={focusedIndex}
                 setFocusedIndex={setFocusedIndex}
               />
             )}
           </Grid>
           <Grid item xs={4} sm={4} md={6}>
-            {data && (
+            {activeItemObject && (
               <Focus
-                item={data?.rootUserCollection.childItemLists[0]?.items[0]}
+                item={activeItemObject}
               />
             )}
           </Grid>

@@ -7,8 +7,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
-import { ITEM_LIST_QUERY } from '../../gql/queries';
-import { useQuery } from '@apollo/client';
 
 type ItemList = {
   id: string;
@@ -16,7 +14,7 @@ type ItemList = {
   items: Item[];
 };
 
-type ItemListProps = {
+export type ItemListProps = {
   itemList: ItemList;
   focusedIndex: number;
   setFocusedIndex: Dispatch<SetStateAction<number>>;
@@ -36,11 +34,10 @@ export default function ItemListView({
       <List component='nav' aria-label='main mailbox folders'>
         {itemList.items.map(
           (item: Item, index: number, items: Item[]) => (
-            <>
+            <div key={index}>
               <ListItemButton
-              // TODO: Make this more efficient
-                selected={focusedIndex === items.indexOf(item)}
-                onClick={event => handleListItemClick(event, items.indexOf(item))}
+                selected={focusedIndex === index}
+                onClick={event => handleListItemClick(event, index)}
               >
                 <ListItemIcon>
                   <InboxIcon />
@@ -48,7 +45,7 @@ export default function ItemListView({
                 <ListItemText primary={item.name} />
               </ListItemButton>
               <Divider />
-            </>
+            </div>
           ),
         )}
       </List>
