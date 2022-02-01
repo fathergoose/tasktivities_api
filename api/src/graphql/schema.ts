@@ -4,7 +4,7 @@ export default gql`
   type UserCollection {
     name: String
     childCollections: [UserCollection]
-    itemLists: [ItemList]
+    childItemLists: [ItemList]
   }
 
   type ItemList {
@@ -46,7 +46,9 @@ export default gql`
     Items: [Item]
     Item(id: ID!): Item
     ItemList(id: ID!): ItemList
+    ChildItemLists: [ItemList]
     UserCollection(id: ID!): UserCollection
+    RootUserCollection(userId: ID!): UserCollection
   }
 
   type Mutation {

@@ -4,7 +4,7 @@ import AppUser from './Users';
 
 const UserCollectionSchema = new Schema({
   name: { type: String, required: true },
-  userCollectionId: { type: Schema.Types.ObjectId },
+  childCollections: { type: [Schema.Types.ObjectId] },
   userId: {
     type: Schema.Types.ObjectId,
     required: true,

@@ -28,8 +28,18 @@ export type CreateItemInput = {
   duration?: number;
 };
 
-export type UserCollection = {
+export type ItemList = {
+  id: string;
   name: string;
+  items: Item[];
+}
+
+  
+export type UserCollection = {
+  id: string;
+  name: string;
+  childCollections: UserCollection[];
+  childItemLists: ItemList[];
   userId: AppUser;
 };
 
@@ -63,13 +73,59 @@ export default {
       return new Promise((resolve, reject) => {
         ItemLists.findOne({ _id: id })
           .populate({ path: 'items', model: 'Items' })
+          .exec((err: CallbackError, list: ItemList) => {
+            if (err) reject(err);
+            else resolve(list);
+          });
+      });
+    },
+    RootUserCollection: (_: unknown, { user_id }: { user_id: string }) => {
+      return new Promise((resolve, reject) => {
+        UserCollections.find({ userId: user_id })
+          .populate({ path: 'childCollections', model: 'UserCollections' })
+          .populate({ path: 'itemLists', model: 'ItemList' })
+          .populate({ path: 'items', model: 'Items' })
           .exec((err: CallbackError, items: Item[]) => {
-            console.log(items);
             if (err) reject(err);
             else resolve(items);
           });
       });
     },
+    UserCollection: (_: unknown, { id }: { id: string }) => {
+      return new Promise((resolve, reject) => {
+        UserCollections.findOne({ _id: id })
+          .populate({ path: 'childCollections', model: 'UserCollections' })
+          .exec((err: CallbackError, collection: UserCollection) => {
+            if (err) reject(err);
+            else resolve(collection);
+          });
+      });
+    },
+    ChildItemLists: (parent: UserCollection) => {
+      return new Promise((resolve, reject) => {
+        ItemLists.where({ userCollectionId: parent.id })
+          .populate({ path: 'items', model: 'Items' })
+          .exec((err: CallbackError, lists: ItemList[]) => {
+            console.log(lists);
+            if (err) reject(err);
+            else resolve(lists);
+          });
+      });
+
+    }
+  },
+  UserCollection: {
+    childItemLists: (parent: UserCollection) => {
+      return new Promise((resolve, reject) => {
+        ItemLists.where({ userCollectionId: parent.id })
+          .populate({ path: 'items', model: 'Items' })
+          .exec((err: CallbackError, lists: ItemList[]) => {
+            if (err) reject(err);
+            else resolve(lists);
+          });
+      });
+    }
+
   },
 
   Mutation: {
