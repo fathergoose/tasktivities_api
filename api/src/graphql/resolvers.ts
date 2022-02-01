@@ -1,9 +1,9 @@
-import { ObjectId } from 'mongodb';
-import { Callback, CallbackError } from 'mongoose';
+import { Callback, CallbackError, Mongoose, Schema, Types } from 'mongoose';
 import AppUsers from '../db/models/Users';
 import Items from '../db/models/Item';
 import ItemLists from '../db/models/ItemList';
 import UserCollections from '../db/models/UserCollection';
+import { mongoose } from '@typegoose/typegoose';
 
 export type Item = {
   id: string;
@@ -32,9 +32,8 @@ export type ItemList = {
   id: string;
   name: string;
   items: Item[];
-}
+};
 
-  
 export type UserCollection = {
   id: string;
   name: string;
@@ -51,15 +50,6 @@ type AppUser = {
 
 export default {
   Query: {
-    Items: (_: unknown) => {
-      return new Promise((resolve, reject) => {
-        Items.find((err, items) => {
-          if (err) reject(err);
-          else resolve(items);
-        });
-      });
-    },
-
     Item: (_: unknown, { id }: { id: string }) => {
       return new Promise((resolve, reject) => {
         Items.findOne({ _id: id }, (err: CallbackError, items: Item[]) => {
@@ -79,15 +69,16 @@ export default {
           });
       });
     },
-    RootUserCollection: (_: unknown, { user_id }: { user_id: string }) => {
+    RootUserCollection: (_: unknown, { userId }: { userId: string }) => {
       return new Promise((resolve, reject) => {
-        UserCollections.find({ userId: user_id })
+        UserCollections.where({
+          userId: new mongoose.Types.ObjectId(userId),
+          name: 'root',
+        })
           .populate({ path: 'childCollections', model: 'UserCollections' })
-          .populate({ path: 'itemLists', model: 'ItemList' })
-          .populate({ path: 'items', model: 'Items' })
-          .exec((err: CallbackError, items: Item[]) => {
+          .exec((err: CallbackError, collections: UserCollection[]) => {
             if (err) reject(err);
-            else resolve(items);
+            else resolve(collections[0]);
           });
       });
     },
@@ -101,18 +92,6 @@ export default {
           });
       });
     },
-    ChildItemLists: (parent: UserCollection) => {
-      return new Promise((resolve, reject) => {
-        ItemLists.where({ userCollectionId: parent.id })
-          .populate({ path: 'items', model: 'Items' })
-          .exec((err: CallbackError, lists: ItemList[]) => {
-            console.log(lists);
-            if (err) reject(err);
-            else resolve(lists);
-          });
-      });
-
-    }
   },
   UserCollection: {
     childItemLists: (parent: UserCollection) => {
@@ -124,8 +103,7 @@ export default {
             else resolve(lists);
           });
       });
-    }
-
+    },
   },
 
   Mutation: {

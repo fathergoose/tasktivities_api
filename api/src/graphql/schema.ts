@@ -43,10 +43,8 @@ export default gql`
   }
 
   type Query {
-    Items: [Item]
     Item(id: ID!): Item
     ItemList(id: ID!): ItemList
-    ChildItemLists: [ItemList]
     UserCollection(id: ID!): UserCollection
     RootUserCollection(userId: ID!): UserCollection
   }
