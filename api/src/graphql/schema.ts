@@ -43,10 +43,10 @@ export default gql`
   }
 
   type Query {
-    Item(id: ID!): Item
-    ItemList(id: ID!): ItemList
-    UserCollection(id: ID!): UserCollection
-    RootUserCollection(userId: ID!): UserCollection
+    item(id: ID!): Item
+    itemList(id: ID!): ItemList
+    userCollection(id: ID!): UserCollection
+    rootUserCollection(userId: ID!): UserCollection
   }
 
   type Mutation {

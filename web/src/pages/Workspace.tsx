@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Grid } from '@mui/material';
 import { useState } from 'react';
 import Focus from '../components/item/FocusedItem';
@@ -6,18 +6,13 @@ import ItemList from '../components/item/ItemList';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
+import NavDrawer from '../components/navigation/NavDrawer';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { ROOT_USER_COLLECTION_QUERY } from '../gql/queries';
 
 type Tag = {
   id: string;
@@ -30,64 +25,52 @@ export type Item = {
   tags: Tag[];
 };
 
-type GetItemsResponse = {
-  getAllItems: Item[];
+export type RootUserCollection = {
+    childItemLists: {
+      name: string;
+      id: string;
+      items: Item[];
+    }[];
+    childCollections: {
+      name: string;
+      id: string;
+      childItemLists: {
+        name: string;
+        id: string;
+        items: Item[];
+      }[];
+      childCollections: {
+        name: string;
+        id: string;
+      }[];
+    }[];
+}
+export type RootUserCollectionResponse = {
+  rootUserCollection: RootUserCollection;
 };
-const GET_ITEMS = gql`
-  query GetAllItems {
-    getAllItems {
-      id
-      createdAt
-      name
-    }
-  }
-`;
 
 const drawerWidth = 240;
 
 interface WorkspaceProps {
   window?: () => Window;
+  userId: string;
 }
 
-export default function Workspace(props: WorkspaceProps) {
-  const [focusedIndex, setFocusedIndex] = useState(0);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { loading, error, data } = useQuery<GetItemsResponse>(GET_ITEMS);
+export default function Workspace({ window, userId }: WorkspaceProps) {
+  const [focusedIndex, setFocusedIndex] = useState<number>(0);
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const { loading, error, data } = useQuery<RootUserCollectionResponse>(
+    ROOT_USER_COLLECTION_QUERY,
+    { variables: { userId } },
+  );
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  const { window } = props;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const drawer = (
-    <div>
-      <Toolbar />
-      <Divider />
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+  const drawer = <NavDrawer root={data?.rootUserCollection} />;
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -98,10 +81,6 @@ export default function Workspace(props: WorkspaceProps) {
       <AppBar
         position='fixed'
         sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}
-        // sx={{
-        //   width: { sm: `calc(100% - ${drawerWidth}px)` },
-        //   ml: { sm: `${drawerWidth}px` },
-        // }}
       >
         <Toolbar>
           <IconButton
@@ -109,7 +88,7 @@ export default function Workspace(props: WorkspaceProps) {
             aria-label='open drawer'
             edge='start'
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -173,14 +152,18 @@ export default function Workspace(props: WorkspaceProps) {
           <Grid item xs={4} sm={4} md={6}>
             {data && (
               <ItemList
-                items={data.getAllItems}
+                itemList={data.rootUserCollection.childItemLists[0]}
                 focusedIndex={focusedIndex}
                 setFocusedIndex={setFocusedIndex}
               />
             )}
           </Grid>
           <Grid item xs={4} sm={4} md={6}>
-            {data && <Focus item={data?.getAllItems[focusedIndex]} />}
+            {data && (
+              <Focus
+                item={data?.rootUserCollection.childItemLists[0]?.items[0]}
+              />
+            )}
           </Grid>
         </Grid>
       </Box>

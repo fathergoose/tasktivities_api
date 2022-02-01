@@ -28,7 +28,8 @@
 			"tasktivities_api",
 			"tsbuildinfo",
 			"typegoose"
-		]
+		],
+		"prettier.jsxSingleQuote": true
 	},
 	"launch": {
 		"version": "0.2.0",

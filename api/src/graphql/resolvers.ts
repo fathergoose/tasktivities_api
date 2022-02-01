@@ -50,7 +50,7 @@ type AppUser = {
 
 export default {
   Query: {
-    Item: (_: unknown, { id }: { id: string }) => {
+    item: (_: unknown, { id }: { id: string }) => {
       return new Promise((resolve, reject) => {
         Items.findOne({ _id: id }, (err: CallbackError, items: Item[]) => {
           if (err) reject(err);
@@ -59,7 +59,7 @@ export default {
       });
     },
 
-    ItemList: (_: unknown, { id }: { id: string }) => {
+    itemList: (_: unknown, { id }: { id: string }) => {
       return new Promise((resolve, reject) => {
         ItemLists.findOne({ _id: id })
           .populate({ path: 'items', model: 'Items' })
@@ -69,7 +69,7 @@ export default {
           });
       });
     },
-    RootUserCollection: (_: unknown, { userId }: { userId: string }) => {
+    rootUserCollection: (_: unknown, { userId }: { userId: string }) => {
       return new Promise((resolve, reject) => {
         UserCollections.where({
           userId: new mongoose.Types.ObjectId(userId),
@@ -82,7 +82,7 @@ export default {
           });
       });
     },
-    UserCollection: (_: unknown, { id }: { id: string }) => {
+    userCollection: (_: unknown, { id }: { id: string }) => {
       return new Promise((resolve, reject) => {
         UserCollections.findOne({ _id: id })
           .populate({ path: 'childCollections', model: 'UserCollections' })
