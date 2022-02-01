@@ -1,14 +1,11 @@
 import { Schema } from 'mongoose';
 import { mongoose } from '@typegoose/typegoose';
-import AppUser from './Users';
-import { ObjectId } from 'mongodb';
 
 const ItemSchema = new Schema(
   {
-    itemListId: { type: ObjectId, required: true },
-    userId: { type: ObjectId, required: true },
+    userId: { type: Schema.Types.ObjectId, required: true },
     name: { type: String, required: true },
-    itemType: { type: String, required: true },
+    type: { type: String, required: true },
     tags: { type: [String], trim: true, lowercase: true },
     pending: { type: Boolean, required: true },
     description: String,

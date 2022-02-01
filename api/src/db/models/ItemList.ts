@@ -1,12 +1,14 @@
 import { mongoose } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
-import AppUser from './Users';
-import UserCollection from './UserCollection';
 
 const ItemListSchema = new Schema({
   name: { type: String, required: true },
-  userCollection: { type: UserCollection, index: true },
-  user: { type: AppUser, index: true },
-});
+  userCollectionId: {
+    type: Schema.Types.ObjectId,
+    unique: true,
+    required: true,
+  },
+  items: { type: [Schema.Types.ObjectId], ref: 'Items' },
+}).index({ userCollectionId: 1 });
 
-export default mongoose.model('ItemLists', ItemListSchema);
+export default mongoose.model('ItemLists', ItemListSchema, 'itemLists');

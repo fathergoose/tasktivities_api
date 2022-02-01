@@ -7,19 +7,6 @@ export default gql`
     itemLists: [ItemList]
   }
 
-  type AppData {
-    root: UserCollection
-  }
-
-  type TempCollection {
-    name: String
-    username: String
-  }
-
-  type TempAppData {
-    root: TempCollection
-  }
-
   type ItemList {
     id: ID!
     name: String!
@@ -30,10 +17,10 @@ export default gql`
     id: ID!
     createdAt: String
     updatedAt: String
-    name: String!
+    name: String
     description: String
     tags: [String]
-    itemType: ItemType!
+    type: ItemType!
     itemDate: String
     duration: Int
   }
@@ -56,9 +43,10 @@ export default gql`
   }
 
   type Query {
-    getAllItems: [Item]
-    findItem(id: ID!): Item
-    getAppData(userId: ID!): TempAppData
+    Items: [Item]
+    Item(id: ID!): Item
+    ItemList(id: ID!): ItemList
+    UserCollection(id: ID!): UserCollection
   }
 
   type Mutation {

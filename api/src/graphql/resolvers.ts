@@ -41,7 +41,7 @@ type AppUser = {
 
 export default {
   Query: {
-    getAllItems: (_: unknown) => {
+    Items: (_: unknown) => {
       return new Promise((resolve, reject) => {
         Items.find((err, items) => {
           if (err) reject(err);
@@ -50,26 +50,23 @@ export default {
       });
     },
 
-    findItem: (_: unknown, { id }: { id: string }) => {
+    Item: (_: unknown, { id }: { id: string }) => {
       return new Promise((resolve, reject) => {
         Items.findOne({ _id: id }, (err: CallbackError, items: Item[]) => {
           if (err) reject(err);
-          else resolve(items);
+          else resolve(items[0]);
         });
       });
     },
 
-    getAppData: (_: unknown, { userId }: { userId: string }) => {
-      console.log(userId);
+    ItemList: (_: unknown, { id }: { id: string }) => {
       return new Promise((resolve, reject) => {
-        UserCollections.findOne({ userId: new ObjectId(userId), name: 'root' })
-          .populate({ path: 'itemLists', model: ItemLists })
-          .exec(function (error: CallbackError, data: UserCollection) {
-            if (error) reject(error);
-            console.log(data);
-            resolve({
-              root: { name: data.name, username: data.userId.username },
-            });
+        ItemLists.findOne({ _id: id })
+          .populate({ path: 'items', model: 'Items' })
+          .exec((err: CallbackError, items: Item[]) => {
+            console.log(items);
+            if (err) reject(err);
+            else resolve(items);
           });
       });
     },

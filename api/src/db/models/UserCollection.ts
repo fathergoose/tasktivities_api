@@ -4,9 +4,13 @@ import AppUser from './Users';
 
 const UserCollectionSchema = new Schema({
   name: { type: String, required: true },
-  userCollection: { type: this },
-  userId: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
-}).index({ userId: 1, userCollection: 1 });
+  userCollectionId: { type: Schema.Types.ObjectId },
+  userId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'users',
+  },
+}).index({ userId: 1, userCollectionId: 1 });
 
 export default mongoose.model(
   'UserCollections',
