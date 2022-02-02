@@ -1,5 +1,4 @@
 import { ApolloServer } from 'apollo-server';
-import express, { Response, Request } from 'express';
 import { environment } from './config/config';
 import typeDefs from './graphql/schema';
 import resolvers from './graphql/resolvers';

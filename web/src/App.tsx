@@ -13,7 +13,7 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      <Workspace />
+      <Workspace userId={'61f196961deefe865dfe4fab'} />
     </ApolloProvider>
   );
 }

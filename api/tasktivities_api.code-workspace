@@ -1,7 +1,7 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"path": "."
 		}
 	],
 	"settings": {
@@ -32,6 +32,19 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
+				"name": "Debug",
+				"request": "launch",
+				"runtimeArgs": [
+					"debug"
+				],
+				"runtimeExecutable": "yarn",
+				"skipFiles": [
+					"<node_internals>/**"
+				],
+				"type": "pwa-node",
+				"restart": true
+			},
+			{
 				"name": "ts-node",
 				"type": "node",
 				"request": "launch",
@@ -40,11 +53,14 @@
 				],
 				"runtimeArgs": [
 					"-r",
+					"nodemon",
+					"-r",
 					"ts-node/register"
 				],
 				"cwd": "${workspaceRoot}",
 				"protocol": "inspector",
-				"internalConsoleOptions": "openOnSessionStart"
+				"internalConsoleOptions": "openOnSessionStart",
+				"restart": true
 			}
 		]
 	}

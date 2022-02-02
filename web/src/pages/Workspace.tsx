@@ -1,29 +1,21 @@
-import { gql, useQuery } from '@apollo/client';
-import { Container, Grid } from '@mui/material';
-import React, { useState } from 'react';
-import Browser from '../components/item/Browser';
+import { useQuery } from '@apollo/client';
+import { Grid } from '@mui/material';
+import { useState } from 'react';
 import Focus from '../components/item/FocusedItem';
-import ItemList from '../components/item/ItemList';
+import ItemList, { ItemListProps } from '../components/item/ItemList';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
+import NavDrawer from '../components/navigation/NavDrawer';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { ROOT_USER_COLLECTION_QUERY } from '../gql/queries';
 
-type Tag = {
-  id: string;
-  name: string;
-};
+type Tag = string;
+
 export type Item = {
   id: string;
   name: string;
@@ -31,67 +23,76 @@ export type Item = {
   tags: Tag[];
 };
 
-type GetItemsResponse = {
-  getAllItems: Item[];
+export type RootUserCollection = {
+  childItemLists: {
+    name: string;
+    id: string;
+    items: Item[];
+  }[];
+  childCollections: {
+    name: string;
+    id: string;
+    childItemLists: {
+      name: string;
+      id: string;
+      items: Item[];
+    }[];
+    childCollections: {
+      name: string;
+      id: string;
+    }[];
+  }[];
 };
-const GET_ITEMS = gql`
-  query GetAllItems {
-    getAllItems {
-      id
-      createdAt
-      name
-    }
-  }
-`;
+export type RootUserCollectionResponse = {
+  rootUserCollection: RootUserCollection;
+};
 
 const drawerWidth = 240;
 
 interface WorkspaceProps {
   window?: () => Window;
+  userId: string;
 }
 
-export default function Workspace(props: WorkspaceProps) {
-  const [focusedIndex, setFocusedIndex] = useState(0);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { loading, error, data } = useQuery<GetItemsResponse>(GET_ITEMS);
+export default function Workspace({ window, userId }: WorkspaceProps) {
+  const [focusedIndex, setFocusedIndex] = useState<number>(0);
+  const [activeList, setActiveList] = useState<string>('_inbox');
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const { loading, error, data } = useQuery<RootUserCollectionResponse>(
+    ROOT_USER_COLLECTION_QUERY,
+    { variables: { userId } },
+  );
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  const { window } = props;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const drawer = (
-    <div>
-      <Toolbar />
-      <Divider />
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
+    <NavDrawer
+      activeList={activeList}
+      setActiveList={setActiveList}
+      root={data?.rootUserCollection}
+    />
   );
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
+  
+    // FIXME: This should be a recursive function no progressively deeper search
+    // LOL: I can't believe it works
+  const activeListObject =
+    data?.rootUserCollection.childItemLists.find(
+      list => list.id === activeList,
+    ) ||
+    data?.rootUserCollection.childCollections
+      .find(collection =>
+        collection.childItemLists.find(list => list.id === activeList),
+      )
+      ?.childItemLists.find(list => list.id === activeList);
+      
+  const activeItemObject = activeListObject?.items[focusedIndex];
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -99,10 +100,6 @@ export default function Workspace(props: WorkspaceProps) {
       <AppBar
         position='fixed'
         sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}
-        // sx={{
-        //   width: { sm: `calc(100% - ${drawerWidth}px)` },
-        //   ml: { sm: `${drawerWidth}px` },
-        // }}
       >
         <Toolbar>
           <IconButton
@@ -110,7 +107,7 @@ export default function Workspace(props: WorkspaceProps) {
             aria-label='open drawer'
             edge='start'
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -122,7 +119,7 @@ export default function Workspace(props: WorkspaceProps) {
       <Box
         component='nav'
         sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-        aria-label='mailbox folders'
+        aria-label='item collection folders and item lists'
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
@@ -172,16 +169,20 @@ export default function Workspace(props: WorkspaceProps) {
           columns={{ xs: 4, sm: 8, md: 12 }}
         >
           <Grid item xs={4} sm={4} md={6}>
-            {data && (
+            {data && activeListObject && (
               <ItemList
-                items={data.getAllItems}
+                itemList={activeListObject}
                 focusedIndex={focusedIndex}
                 setFocusedIndex={setFocusedIndex}
               />
             )}
           </Grid>
           <Grid item xs={4} sm={4} md={6}>
-            {data && <Focus item={data?.getAllItems[focusedIndex]} />}
+            {activeItemObject && (
+              <Focus
+                item={activeItemObject}
+              />
+            )}
           </Grid>
         </Grid>
       </Box>

@@ -1,26 +1,21 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Item } from '../../pages/Workspace';
+import ChipsArray, { ChipData } from '../ChipArray';
 
 type FocusedItemProps = {
   item: Item;
 };
 
-const bull = (
-  <Box
-    component='span'
-    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-  >
-    •
-  </Box>
-);
-
 export default function FocusedItem({ item }: FocusedItemProps) {
+  const tagChipData = item.tags.map(
+    (tag, index) => ({ key: index, label: tag } as ChipData),
+  );
+  const [chipData, setChipData] = React.useState<ChipData[]>(tagChipData);
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -28,13 +23,13 @@ export default function FocusedItem({ item }: FocusedItemProps) {
           {item.name}
         </Typography>
         <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-          adjective
+          {item.description}
         </Typography>
-        <Typography variant='body2'>
-          well meaning and kindly.
-          <br />
-          {'"a benevolent smile"'}
-        </Typography>
+        <ChipsArray
+          label='Tags:&nbsp;'
+          {...{ chipData }}
+          {...{ setChipData }}
+        />
       </CardContent>
       <CardActions>
         <Button size='small'>Learn More</Button>
