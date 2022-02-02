@@ -24,6 +24,13 @@ export default gql`
     type: ItemType!
     itemDate: String
     duration: Int
+    state: ItemState!
+  }
+
+  enum ItemState {
+    COMPLETED
+    PENDING
+    CANCELLED
   }
 
   enum ItemType {

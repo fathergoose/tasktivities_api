@@ -28,27 +28,9 @@ export const ITEM_LIST_QUERY = gql`
 `;
 
 export const ROOT_USER_COLLECTION_QUERY = gql`
- query GetRootCollection($userId: ID!) {
-  rootUserCollection(userId: $userId) {
-    name
-    childItemLists {
+  query GetRootCollection($userId: ID!) {
+    rootUserCollection(userId: $userId) {
       name
-      id
-      items {
-        id
-        name
-        description
-        type
-        tags
-        createdAt
-        updatedAt
-        itemDate
-        duration
-      }
-    }
-    childCollections {
-      name
-      id
       childItemLists {
         name
         id
@@ -62,28 +44,49 @@ export const ROOT_USER_COLLECTION_QUERY = gql`
           updatedAt
           itemDate
           duration
+          state
         }
       }
       childCollections {
         name
         id
         childItemLists {
-        name
-        id
-        items {
-          id
           name
-          description
-          type
-          tags
-          createdAt
-          updatedAt
-          itemDate
-          duration
+          id
+          items {
+            id
+            name
+            description
+            type
+            tags
+            createdAt
+            updatedAt
+            itemDate
+            duration
+            state
+          }
         }
+        childCollections {
+          name
+          id
+          childItemLists {
+            name
+            id
+            items {
+              id
+              name
+              description
+              type
+              tags
+              createdAt
+              updatedAt
+              itemDate
+              duration
+              state
+            }
+          }
         }
       }
     }
   }
- }
 `;

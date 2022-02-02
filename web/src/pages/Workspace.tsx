@@ -13,14 +13,22 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ROOT_USER_COLLECTION_QUERY } from '../gql/queries';
+import { TimeLike } from 'fs';
 
 type Tag = string;
+type Seconds = number;
 
 export type Item = {
   id: string;
   name: string;
   description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  itemDate: Date;
+  duration: Seconds;
   tags: Tag[];
+  state: 'PENDING' | 'CANCELED' | 'COMPLETED';
+  type: 'TASK' | 'ACTIVITY';
 };
 
 export type RootUserCollection = {
