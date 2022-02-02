@@ -14,10 +14,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ROOT_USER_COLLECTION_QUERY } from '../gql/queries';
 
-type Tag = {
-  id: string;
-  name: string;
-};
+type Tag = string;
+
 export type Item = {
   id: string;
   name: string;
