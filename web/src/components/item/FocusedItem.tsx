@@ -12,6 +12,8 @@ import { useState } from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
+import { LockClock } from '@mui/icons-material';
+import { Collapse } from '@mui/material';
 
 type FocusedItemProps = {
   item: Item;
@@ -36,7 +38,11 @@ export default function FocusedItem({ item }: FocusedItemProps) {
           component='div'
           color={item.state === 'PENDING' ? 'text.primary' : 'text.disabled'}
         >
-          <Checkbox checked={item.state === 'COMPLETED'} />
+          {item.type === 'TASK' ? (
+            <Checkbox checked={item.state === 'COMPLETED'} />
+          ) : (
+            <LockClock />
+          )}
           {item.name}
         </Typography>
         <Typography sx={{ mb: 1.5 }} color='text.secondary'>
@@ -53,7 +59,7 @@ export default function FocusedItem({ item }: FocusedItemProps) {
           •••
         </Button>
       </CenteredCardActions>
-      {expanded && (
+      <Collapse in={expanded}>
         <CardContent>
           <List dense>
             {extraFields.map(field => {
@@ -68,7 +74,7 @@ export default function FocusedItem({ item }: FocusedItemProps) {
             })}
           </List>
         </CardContent>
-      )}
+        </Collapse>
     </Card>
   );
 }

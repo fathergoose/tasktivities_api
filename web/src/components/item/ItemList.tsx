@@ -7,6 +7,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
+import Checkbox from '@mui/material/Checkbox';
 
 type ItemList = {
   id: string;
@@ -20,6 +21,13 @@ export type ItemListProps = {
   setFocusedIndex: Dispatch<SetStateAction<number>>;
 };
 
+function truncateAtWordSeparator(text: string, maxLength: number) {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return text.slice(0, text.slice(0, maxLength).lastIndexOf(' ')) + '...';
+}
+
 export default function ItemListView({
   itemList,
   focusedIndex,
@@ -32,22 +40,31 @@ export default function ItemListView({
   return (
     <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
       <List component='nav' aria-label='main mailbox folders'>
-        {itemList.items.map(
-          (item: Item, index: number, items: Item[]) => (
-            <div key={index}>
-              <ListItemButton
-                selected={focusedIndex === index}
-                onClick={event => handleListItemClick(event, index)}
-              >
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary={item.name} />
-              </ListItemButton>
-              <Divider />
-            </div>
-          ),
-        )}
+        {itemList.items.map((item: Item, index: number, items: Item[]) => (
+          <div key={index}>
+            <ListItemButton
+              selected={focusedIndex === index}
+              onClick={event => handleListItemClick(event, index)}
+            >
+              <ListItemIcon>
+                <Checkbox checked={item.state === 'COMPLETED'} />
+              </ListItemIcon>
+              <ListItemText
+                primary={item.name}
+                secondary={truncateAtWordSeparator(item.description || '', 45)}
+                primaryTypographyProps={{
+                  color:
+                    item.state === 'PENDING' ? 'text.primary' : 'text.disabled',
+                }}
+                secondaryTypographyProps={{
+                  color:
+                    item.state === 'PENDING' ? 'text.primary' : 'text.disabled',
+                }}
+              />
+            </ListItemButton>
+            <Divider />
+          </div>
+        ))}
       </List>
     </Box>
   );

@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useState } from 'react';
 import Focus from '../components/item/FocusedItem';
 import ItemList, { ItemListProps } from '../components/item/ItemList';
@@ -13,7 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ROOT_USER_COLLECTION_QUERY } from '../gql/queries';
-import { TimeLike } from 'fs';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 type Tag = string;
 type Seconds = number;
@@ -87,9 +87,9 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
-  
-    // FIXME: This should be a recursive function no progressively deeper search
-    // LOL: I can't believe it works
+
+  // FIXME: This should be a recursive function no progressively deeper search
+  // LOL: I can't believe it works
   const activeListObject =
     data?.rootUserCollection.childItemLists.find(
       list => list.id === activeList,
@@ -99,7 +99,7 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
         collection.childItemLists.find(list => list.id === activeList),
       )
       ?.childItemLists.find(list => list.id === activeList);
-      
+
   const activeItemObject = activeListObject?.items[focusedIndex];
 
   return (
@@ -120,7 +120,7 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
             <MenuIcon />
           </IconButton>
           <Typography variant='h6' noWrap component='div'>
-            Responsive drawer
+            Tasktivities
           </Typography>
         </Toolbar>
       </AppBar>
@@ -177,6 +177,22 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
           columns={{ xs: 4, sm: 8, md: 12 }}
         >
           <Grid item xs={4} sm={4} md={6}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                listStyle: 'none',
+                p: 0.5,
+                m: 0,
+              }}
+            >
+              <Button>
+                <AddCircleOutlineIcon fontSize='large' color='primary' />
+              </Button>
+            </Box>
+
             {data && activeListObject && (
               <ItemList
                 itemList={activeListObject}
@@ -186,11 +202,7 @@ export default function Workspace({ window, userId }: WorkspaceProps) {
             )}
           </Grid>
           <Grid item xs={4} sm={4} md={6}>
-            {activeItemObject && (
-              <Focus
-                item={activeItemObject}
-              />
-            )}
+            {activeItemObject && <Focus item={activeItemObject} />}
           </Grid>
         </Grid>
       </Box>
