@@ -31,7 +31,7 @@ name: string;
 Maybe we'd be better off modeling this at the DB level first.
 
 Assumptions:
-- The user model should't have the bulk of the user's app-data nested in it
+- The user model shouldn't have the bulk of the user's app-data nested in it
 - Nesting collection all the way down to tags is excessive
 - User can have groups
 - Lists can have a single group reference
